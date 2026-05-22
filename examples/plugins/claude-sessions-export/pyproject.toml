@@ -1,0 +1,18 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "claude-sessions-export"
+version = "0.1.0"
+description = "Export a Claude Code session to plain Markdown."
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Example Author" }]
+dependencies = ["claude-sessions"]
+
+[project.entry-points."claude_sessions.commands"]
+export = "claude_sessions_export:ExportCommand"
+
+[tool.hatch.build.targets.wheel]
+packages = ["claude_sessions_export"]
