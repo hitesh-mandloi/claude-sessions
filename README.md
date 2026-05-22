@@ -23,17 +23,22 @@ This tool fills the gap and is designed to be **extended**: anyone can publish a
 
 ## Install
 
-Requires Python 3.9+, [Claude Code](https://claude.com/claude-code) (`claude` on `PATH`), and optionally [fzf](https://github.com/junegunn/fzf) for a nicer picker.
+Requires Python 3.9+, [Claude Code](https://claude.com/claude-code) (`claude` on `PATH`), and optionally [fzf](https://github.com/junegunn/fzf) for a nicer picker. Tested on macOS and Linux; Windows is not supported (the code assumes Unix paths and the Claude Code `~/.claude/projects/` layout).
 
 ```sh
-# recommended (isolated)
-pipx install claude-sessions
+# recommended (isolated, no PyPI yet)
+pipx install git+https://github.com/hitesh-mandloi/claude-sessions.git
 
-# or from source
+# or from a local clone
 git clone https://github.com/hitesh-mandloi/claude-sessions.git
 cd claude-sessions
 make install
+
+# upgrade later
+pipx upgrade claude-sessions
 ```
+
+> Not yet on PyPI. Once it is, `pipx install claude-sessions` will work.
 
 ## Usage
 
