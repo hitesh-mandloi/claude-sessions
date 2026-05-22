@@ -55,10 +55,30 @@ def discover_commands() -> dict[str, Command]:
     return cmds
 
 
+EPILOG = """\
+quick start:
+  claude-sessions ls --all          list sessions across every project
+  claude-sessions pick              interactive picker (cross-project by default)
+  claude-sessions resume <id>       cd to its cwd and exec `claude --resume <id>`
+  claude-sessions info <id>         metadata + summary + first prompt
+  claude-sessions rm <id>           delete a session
+
+notes:
+  - `ls` defaults to the current shell directory (mirroring `claude --resume`
+    semantics). Pass `--all` to see sessions from every project on this machine.
+  - The picker is cross-project by default. `claude-sessions pick --exec`
+    cds to the chosen session's cwd and resumes it in one step.
+  - Add a shell wrapper so plain `claude --resume` triggers the picker:
+    https://github.com/hitesh-mandloi/claude-sessions#shell-integration
+"""
+
+
 def build_parser(commands: dict[str, Command]) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="claude-sessions",
         description="List, pick, resume, and manage Claude Code sessions across projects.",
+        epilog=EPILOG,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     sub = parser.add_subparsers(dest="command", metavar="<command>")
@@ -72,9 +92,13 @@ def build_parser(commands: dict[str, Command]) -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    raw = sys.argv[1:] if argv is None else argv
     commands = discover_commands()
     parser = build_parser(commands)
-    args = parser.parse_args(argv)
+    if not raw:
+        parser.print_help()
+        return 0
+    args = parser.parse_args(raw)
     cmd: Command = args._cmd
     try:
         return cmd.run(args)

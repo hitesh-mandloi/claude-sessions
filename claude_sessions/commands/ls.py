@@ -46,6 +46,8 @@ class LsCommand(Command):
         )
 
     def run(self, args: argparse.Namespace) -> int:
+        from pathlib import Path
+
         since = (time.time() - args.since) if args.since else None
         sessions = list_sessions(all_projects=args.all, since=since)
         sessions = sessions[: args.limit] if args.limit > 0 else sessions
@@ -67,6 +69,17 @@ class LsCommand(Command):
             return 0
 
         if not sessions:
+            if not args.all:
+                # See if other projects have sessions and point the user there.
+                others = list_sessions(all_projects=True, since=since)
+                if others:
+                    print(
+                        f"no sessions found in this directory ({Path.cwd()}).\n"
+                        f"  {len(others)} session(s) exist in other projects.\n"
+                        f"  try: claude-sessions ls --all",
+                        file=sys.stderr,
+                    )
+                    return 0
             print("no sessions found", file=sys.stderr)
             return 0
 

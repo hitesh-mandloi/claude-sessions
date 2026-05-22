@@ -20,6 +20,17 @@ def test_ls_default_only_current_cwd(fake_sessions_root, chdir_to, tmp_path, cap
     err = capsys.readouterr().err
     assert rc == 0
     assert "no sessions found" in err
+    # other projects do have sessions, so the hint should appear
+    assert "claude-sessions ls --all" in err
+
+
+def test_ls_no_sessions_anywhere_no_hint(tmp_path, monkeypatch, capsys):
+    monkeypatch.setenv("CLAUDE_SESSIONS_ROOT", str(tmp_path / "empty"))
+    rc = main(["ls"])
+    err = capsys.readouterr().err
+    assert rc == 0
+    assert "no sessions found" in err
+    assert "ls --all" not in err  # no hint when there's nothing anywhere
 
 
 def test_ls_json_output(fake_sessions_root, capsys):

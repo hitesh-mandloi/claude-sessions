@@ -43,9 +43,11 @@ claude-sessions <command> [options]
 
 ### `ls` — list sessions
 
+> **Heads-up:** `ls` defaults to the *current shell directory*, mirroring `claude --resume` semantics. If you've never run `claude` from your current `pwd`, you'll see `no sessions found`. Pass `--all` to see sessions from every project on this machine — that's what most users want.
+
 ```sh
-claude-sessions ls                 # current cwd only (matches `claude --resume` behavior)
-claude-sessions ls --all           # every project on this machine
+claude-sessions ls --all           # every project on this machine (probably what you want)
+claude-sessions ls                 # only the current cwd (matches `claude --resume`)
 claude-sessions ls --all -n 50     # cap at 50
 claude-sessions ls --all --since 24h
 claude-sessions ls --all --json    # NDJSON for piping
