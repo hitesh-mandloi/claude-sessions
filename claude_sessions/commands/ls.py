@@ -88,7 +88,7 @@ class LsCommand(Command):
             label_of = lambda s: s.first_user_prompt or "(no prompt found)"  # noqa: E731
         else:
             header = "SUMMARY"
-            label_of = lambda s: s.label or "(untitled)"  # noqa: E731
+            label_of = _smart_label
 
         rows = [
             [
@@ -102,7 +102,21 @@ class LsCommand(Command):
         table = render_table(
             rows,
             headers=["MTIME", "PROJECT", "ID", header],
-            max_widths=[16, 40, 8, 70],
+            max_widths=[16, 35, 8, 110],
         )
         print(table)
         return 0
+
+
+def _smart_label(s) -> str:
+    """SUMMARY column: ai-title, plus first-prompt snippet when it adds info."""
+    summary = s.summary or ""
+    prompt = s.first_user_prompt or ""
+    if summary and prompt and not _redundant(summary, prompt):
+        return f"{summary} — {prompt}"
+    return summary or prompt or "(untitled)"
+
+
+def _redundant(a: str, b: str) -> bool:
+    al, bl = a.lower(), b.lower()
+    return al in bl or bl in al

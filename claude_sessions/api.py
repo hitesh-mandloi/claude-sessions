@@ -15,6 +15,7 @@ from .core import (
     get_session,
     list_sessions,
     project_dir_to_cwd,
+    search_session_content,
     sessions_root,
 )
 
@@ -43,5 +44,6 @@ __all__ = [
     "get_session",
     "list_sessions",
     "project_dir_to_cwd",
+    "search_session_content",
     "sessions_root",
 ]

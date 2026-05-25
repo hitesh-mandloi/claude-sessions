@@ -59,14 +59,30 @@ claude-sessions ls --all --json    # NDJSON for piping
 claude-sessions ls --all --prompt  # show first user prompt instead of summary
 ```
 
-Example output (SUMMARY column shows Claude Code's auto-generated `ai-title`, falling back to the first user prompt when no title exists yet):
+Example output. SUMMARY combines Claude Code's auto-generated `ai-title` with a snippet of the first user prompt when the two add information (i.e. neither is a substring of the other), so you get both the topic and the specific intent at a glance:
 
 ```
 MTIME             PROJECT                              ID        SUMMARY
-2026-05-22 14:21  -Users-me-repos-api-service          a1b2c3d4  Update WAF rule for /api/v2 endpoint
-2026-05-22 11:09  -Users-me-repos-web-app              91a4f0e2  Refactor request middleware
+2026-05-22 14:21  -Users-me-repos-api-service          a1b2c3d4  Update WAF rule for /api/v2 endpoint — fix the WAF rule that's blocking POST requests
+2026-05-22 11:09  -Users-me-repos-web-app              91a4f0e2  Refactor request middleware — split the logging concern out of the auth middleware
 2026-05-21 18:55  -Users-me-repos-claude-sessions      77ee30bb  Scaffold the claude-sessions project
 ```
+
+### `find` — search session content by keyword
+
+Searches the auto-generated summary, the first user prompt, and the full transcript (user + assistant messages) for matching text. Multiple words are AND-combined. Case-insensitive.
+
+```sh
+claude-sessions find "network summary"           # any session that mentions both words
+claude-sessions find "tailscale" --since 7d      # only within the last 7 days
+claude-sessions find "k8s" --field summary       # restrict to ai-title only
+claude-sessions find "k8s" --field content       # only the full transcript (skip title/prompt)
+claude-sessions find "deploy" --ids-only         # print just IDs, one per line (script-friendly)
+claude-sessions find "deploy" --json             # NDJSON output
+claude-sessions find "deploy" --cwd-only         # restrict to the current cwd
+```
+
+`--field` accepts `all` (default), `summary`, `prompt`, or `content`. Content search opens each candidate file once and short-circuits as soon as every term is found.
 
 ### `pick` — interactive picker (cross-project by default)
 
