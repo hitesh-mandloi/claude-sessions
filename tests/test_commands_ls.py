@@ -71,6 +71,15 @@ def test_ls_default_shows_summary_column(fake_sessions_root, capsys):
     assert "second in A" in out
 
 
+def test_ls_summary_combines_title_with_prompt_when_not_redundant(fake_sessions_root, capsys):
+    """Title='First session in A', prompt='hello from A' -> both should appear joined."""
+    rc = main(["ls", "--all"])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "First session in A" in out
+    assert "hello from A" in out  # prompt appended after the title
+
+
 def test_ls_prompt_flag_switches_back_to_first_prompt(fake_sessions_root, capsys):
     rc = main(["ls", "--all", "--prompt"])
     out = capsys.readouterr().out

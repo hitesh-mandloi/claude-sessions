@@ -6,6 +6,7 @@ from collections.abc import Iterable
 
 from . import __version__
 from .api import Command
+from .commands.find import FindCommand
 from .commands.info import InfoCommand
 from .commands.ls import LsCommand
 from .commands.pick import PickCommand
@@ -18,6 +19,7 @@ BUILTINS: list[type[Command]] = [
     ResumeCommand,
     InfoCommand,
     RmCommand,
+    FindCommand,
 ]
 
 
@@ -61,6 +63,7 @@ quick start:
   claude-sessions pick              interactive picker (cross-project by default)
   claude-sessions resume <id>       cd to its cwd and exec `claude --resume <id>`
   claude-sessions info <id>         metadata + summary + first prompt
+  claude-sessions find <words>      search session titles, prompts, and content
   claude-sessions rm <id>           delete a session
 
 notes:

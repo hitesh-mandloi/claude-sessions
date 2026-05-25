@@ -117,6 +117,42 @@ def _scan_metadata(path: Path) -> dict:
     return {"first_prompt": first_prompt, "summary": last_title, "cwd": cwd}
 
 
+def search_session_content(path: Path, terms: list[str]) -> bool:
+    """True if every term (case-insensitive) appears in any user/assistant message text."""
+    if not terms:
+        return True
+    remaining = {t.lower() for t in terms}
+    try:
+        with path.open(encoding="utf-8", errors="replace") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    obj = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                text = ""
+                msg = obj.get("message")
+                if isinstance(msg, dict) and msg.get("role") in ("user", "assistant"):
+                    text = _flatten_content(msg.get("content"))
+                else:
+                    t = obj.get("type")
+                    if t == "ai-title":
+                        text = str(obj.get("aiTitle") or "")
+                    elif t == "last-prompt":
+                        text = str(obj.get("lastPrompt") or "")
+                if not text:
+                    continue
+                lower = text.lower()
+                remaining = {q for q in remaining if q not in lower}
+                if not remaining:
+                    return True
+    except OSError:
+        return False
+    return not remaining
+
+
 def _flatten_content(content) -> str:
     if isinstance(content, str):
         return content.strip()
